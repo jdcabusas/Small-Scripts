@@ -1,0 +1,386 @@
+//+------------------------------------------------------------------+
+
+//|                                                      Mover.mq4 |
+
+//|                                                   JOSEPH CABUSAS |
+
+//|                                             https://www.mql5.com |
+
+//+------------------------------------------------------------------+
+
+#property copyright "JOSEPH CABUSAS"
+
+#property link      "https://www.mql5.com"
+
+#property version   "1.00"
+
+#property strict
+
+ 
+
+ 
+
+int Magic = 201201; 
+
+double Lots          = 0.01;
+
+int flag = 0;
+
+
+ 
+
+void MaRecentValues(double& ma[], int maPeriod)
+
+  {
+
+   // i is the index of the price array to calculate the MA value for.
+
+   // e.g. i=0 is the current price, i=1 is the previous bar's price.
+
+   int numValues = 10;
+
+   for (int i=0; i < numValues; i++)
+
+     {
+
+      ma[i] = iMA(NULL,0,maPeriod,0,MODE_SMMA,PRICE_HIGH,i);
+
+     }
+
+  }
+
+ 
+ 
+ 
+
+/******************************************************/ 
+
+void OnTick()
+
+  {
+
+      int GBP = 0;
+      int EUR = 0;
+      int YEN = 0;
+      int AUD = 0;
+      int GBPJPY = 0;
+   
+      int signal = 0;
+
+   for(int i = 0; i < OrdersTotal(); i++){
+
+       if(OrderSelect(i,SELECT_BY_POS)){
+       
+       if(OrderSymbol() == "GBPUSD"){
+         GBP = 1;
+       }
+       
+       if(OrderSymbol() == "EURUSD"){
+         EUR = 1;
+       }
+       
+       if(OrderSymbol() == "USDJPY"){
+         YEN = 1;
+       }
+       
+       if(OrderSymbol() == "AUDUSD"){
+         AUD = 1;
+       }
+       
+       if(OrderSymbol() == "GBPJPY"){
+         GBPJPY = 1;
+       }
+         
+      }
+     }
+ 
+
+   // Execute only on the first tick of a new bar, to avoid repeatedly
+
+   // opening orders when an open condition is satisfied.
+
+   
+
+  
+
+   //---- get Moving Average values
+
+ 
+
+   double shortMa[10];
+
+   MaRecentValues(shortMa, 50);
+
+   double ts =0;//iMA(NULL,0,20,0,MODE_SMMA,PRICE_HIGH,0);
+
+   double trend = iMA(NULL,0,300,0,MODE_SMMA,PRICE_HIGH,0);
+   double longMa[10];
+   MaRecentValues(longMa, 200);
+
+  
+
+   //---- buy conditions
+
+   if (shortMa[8] < longMa[8]
+
+      && shortMa[0] > longMa[0])
+
+     {
+
+      signal = 1;
+
+     }
+
+ 
+
+   //---- sell conditions
+
+   if (shortMa[8] > longMa[8]
+
+      && shortMa[0] < longMa[0])
+
+     {
+
+      signal = -1;
+
+     }
+
+    if (OrdersTotal() > 1){
+   signal = 0;
+   }
+  
+
+
+/*====================================================================*/
+
+     
+
+     
+ 
+
+       if((Bid) > trend + 100 * Point){
+      
+      if (signal == 1)
+
+     {
+
+         
+      if(GBP == 0){
+      OrderSend("GBPUSD",OP_BUY,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Bid + 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(EUR == 0){
+      OrderSend("EURUSD",OP_BUY,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Bid + 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(YEN == 0){
+      OrderSend("USDJPY",OP_BUY,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Bid + 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(AUD == 0){
+      OrderSend("AUDUSD",OP_BUY,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Bid + 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(GBPJPY == 0){
+      OrderSend("GBPJPY",OP_BUY,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Bid + 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+
+     }
+
+      
+      }else if((Ask) < trend-100*Point){
+      if (signal == -1)
+
+     {
+
+      Print("Sell signal");
+               if(GBP == 0){
+      OrderSend("GBPUSD",OP_SELL,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Ask - 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(EUR == 0){
+      OrderSend("EURUSD",OP_SELL,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Ask - 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(YEN == 0){
+      OrderSend("USDJPY",OP_SELL,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Ask - 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(AUD == 0){
+      OrderSend("AUDUSD",OP_SELL,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Ask - 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+         
+      if(GBPJPY == 0){
+      OrderSend("GBPJPY",OP_SELL,Lots,Bid,30,
+
+         ts, // Stop loss price.
+
+        Ask - 100 * Point, // Take profit price.
+
+         NULL,1234,0,Green);
+         }
+
+         }
+      }
+
+    
+
+   /***************************************************************/
+
+ 
+
+     for(int i = 0; i < OrdersTotal(); i++){
+
+       if(OrderSelect(i,SELECT_BY_POS)){
+
+       if(OrderType() == OP_BUY){
+         
+         if(Bid-OrderOpenPrice()>Point*2000 && flag == 5){
+         
+         flag = 1;
+         OrderSend(Symbol(),OP_BUY,0.02,Bid,30,
+
+         ts, // Stop loss price.
+
+         /*Bid+150*Point*/0, // Take profit price.
+
+         NULL,Magic,0,Green);
+         
+         }
+
+         if(Bid-OrderOpenPrice()>Point*25){
+
+         if(OrderStopLoss() < Bid - shortMa[0]*Point || OrderStopLoss() == 0)
+
+        {
+
+           
+
+            bool res=OrderModify(OrderTicket(),OrderOpenPrice(),ts,OrderTakeProfit(),0,Blue);
+
+           
+           
+
+            
+
+ 
+
+        }
+
+        }
+
+       
+
+          }else if(OrderType() == OP_SELL){
+
+          if(OrderOpenPrice()-Ask>Point*2000 && flag == 5){
+          
+          flag = 1;
+          OrderSend(Symbol(),OP_SELL,0.02,Ask,30,
+
+         ts,  // Stop loss price.
+
+         /*Ask-150*Point*/0, // Take profit price.
+
+         NULL,Magic,0,Red);
+         
+         
+         }
+         
+         
+         if(OrderOpenPrice()-Ask>Point*25){
+
+         if(OrderStopLoss() > shortMa[0] - Ask*Point || OrderStopLoss() == 0)
+
+       
+
+           
+
+            bool res=OrderModify(OrderTicket(),OrderOpenPrice(),ts,OrderTakeProfit(),0,Blue);
+
+
+       
+
+        }
+
+      }
+
+      }
+
+     }
+     
+           for(int i = 0; i < OrdersTotal(); i++){
+
+       if(OrderSelect(i,SELECT_BY_POS)){
+       
+       if(OrderMagicNumber() == Magic){
+         flag = 1;
+       }else{
+        flag = 0;
+       }
+       
+       }
+      }
+
+           
+
+      
+
+ }    
+
+ 
