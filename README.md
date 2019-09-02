@@ -14,3 +14,6 @@ Revovles around trading dring the opening of a market or befor news event. Times
 Mover Robot
 
 Using MA crossovers to open trades and ride trends. Uses moving average as trailing stop.
+
+SideStand Robot
+I am currently live testing this robot. Simply open trades on five currency pairs on their 5M chart using MA cross. Using only 0.01 lot to capture small gains and then discretionary trade also. Looking only for a semi automatic trading approach.
